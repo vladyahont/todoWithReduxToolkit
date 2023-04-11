@@ -5,6 +5,7 @@ import {handleServerAppError, handleServerNetworkError} from 'utils/error-utils'
 import {appActions} from "app/app-reducer";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {todolistsActions} from "features/TodolistsList/todolists-reducer";
+import {clearTasksAndTodos} from "features/TodolistsList/Todolist/additionalActions";
 
 const initialState: TasksStateType = {}
 
@@ -16,7 +17,7 @@ const slice = createSlice({
             const tasks = state[action.payload.todolistId]
             const index = tasks.findIndex(t => t.id === action.payload.taskId)
             if (index !== -1)
-                tasks.slice(index, 1)
+                tasks.splice(index, 1)
         },
         addTask: (state, action: PayloadAction<{task: TaskType}>) => {
             state[action.payload.task.todoListId].unshift(action.payload.task)
@@ -29,12 +30,11 @@ const slice = createSlice({
         },
         setTasks: (state, action: PayloadAction<{tasks: Array<TaskType>, todolistId: string}>) => {
             state[action.payload.todolistId] = action.payload.tasks
-        },
+        }
     },
     extraReducers: builder => {
         builder
             .addCase(todolistsActions.addTodolist, (state, action) => {
-                console.log(action.payload.todolist)
                 state[action.payload.todolist.id] = []
             })
             .addCase(todolistsActions.removeTodolist, (state, action) => {
@@ -42,6 +42,9 @@ const slice = createSlice({
             })
             .addCase(todolistsActions.setTodos, (state, action) => {
                 action.payload.todos.forEach(todo => state[todo.id] = [])
+            })
+            .addCase(clearTasksAndTodos, () => {
+                return {}
             })
     }
 })
