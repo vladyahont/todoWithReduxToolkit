@@ -1,5 +1,5 @@
 import {TaskPriorities, TaskStatuses} from "common/enums/emuns";
-import {UpdateDomainTaskModelType} from "features/TodolistsList/tasks-reducer";
+import {UpdateDomainTaskModelType} from "features/Tasks/tasks-reducer";
 import axios from 'axios'
 
 export const instance = axios.create({
@@ -20,14 +20,14 @@ export const todolistsAPI = {
     deleteTodolist(id: string) {
         return instance.delete<ResponseType>(`todo-lists/${id}`);
     },
-    updateTodolist(id: string, title: string) {
-        return instance.put<ResponseType>(`todo-lists/${id}`, {title: title});
+    updateTodolist(arg: ChangeTodoTitleArgType) {
+        return instance.put<ResponseType>(`todo-lists/${arg.todolistId}`, {title: arg.title});
     },
     getTasks(todolistId: string) {
         return instance.get<GetTasksResponse>(`todo-lists/${todolistId}/tasks`);
     },
-    deleteTask(todolistId: string, taskId: string) {
-        return instance.delete<ResponseType>(`todo-lists/${todolistId}/tasks/${taskId}`);
+    deleteTask(arg: RemoveTaskArgType) {
+        return instance.delete<ResponseType>(`todo-lists/${arg.todolistId}/tasks/${arg.taskId}`);
     },
     createTask(arg: AddTaskArgType) {
         return instance.post<ResponseType<{ item: TaskType}>>(`todo-lists/${arg.todolistId}/tasks`, {title: arg.title});
@@ -87,4 +87,12 @@ export type UpdateTaskArgType = {
     todolistId: string,
     taskId: string,
     domainModel: UpdateDomainTaskModelType
+}
+export type RemoveTaskArgType = {
+    taskId: string
+    todolistId: string
+}
+export type ChangeTodoTitleArgType = {
+    todolistId: string
+    title: string
 }
