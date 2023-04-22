@@ -7,8 +7,8 @@ import {ResultCode} from "common/enums/emuns";
 
 const initialState: TodolistDomainType[] = []
 
-const fetchTodolists = createAppAsyncThunk<{ todos: TodolistType[] }, any>
-('todo/fetchTodolists', async (arg, thunkAPI) => {
+const fetchTodolists = createAppAsyncThunk<{ todos: TodolistType[] }, void>
+('todo/fetchTodolists', async (_, thunkAPI) => {
     const {dispatch, rejectWithValue} = thunkAPI
     try {
         dispatch(appActions.setAppStatus({status: 'loading'}))

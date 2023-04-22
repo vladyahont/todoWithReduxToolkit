@@ -1,11 +1,13 @@
 import React from 'react'
-import { useFormik } from 'formik'
+import {FormikHelpers, useFormik} from 'formik'
 import { useSelector } from 'react-redux'
-import { loginTC } from 'features/auth/auth-reducer'
 import { Navigate } from 'react-router-dom'
 import { useAppDispatch } from 'common/hooks/useAppDispatch';
 import { Button, Checkbox, FormControl, FormControlLabel, FormGroup, FormLabel, Grid, TextField } from '@mui/material'
 import {selectorIsLoggedIn} from "common/utils/selectors";
+import {authThunks} from "features/auth/auth-reducer";
+import {LoginParamsType} from "features/auth/auth.api";
+import {ResponseType} from "features/TodolistsList/Todolist/todolists.api";
 
 export const Login = () => {
     const dispatch = useAppDispatch()
@@ -32,8 +34,17 @@ export const Login = () => {
             password: '',
             rememberMe: false
         },
-        onSubmit: values => {
-            dispatch(loginTC(values));
+        onSubmit: (values, formikHelpers: FormikHelpers<LoginParamsType>) => {
+            dispatch(authThunks.login(values))
+                .unwrap()
+                .catch((reason: ResponseType) => {
+                    const {fieldsErrors} = reason
+                    if (fieldsErrors) {
+                        reason.fieldsErrors.forEach((fieldError) => {
+                            formikHelpers.setFieldError(fieldError.field, fieldError.error)
+                        })
+                    }
+                })
         },
     })
 
@@ -66,7 +77,7 @@ export const Login = () => {
                             margin="normal"
                             {...formik.getFieldProps("email")}
                         />
-                        {formik.errors.email ? <div>{formik.errors.email}</div> : null}
+                        {formik.errors.email ? <div style={{color: 'red'}}>{formik.errors.email}</div> : null}
                         <TextField
                             type="password"
                             label="Password"

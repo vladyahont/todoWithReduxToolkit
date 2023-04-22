@@ -2,11 +2,9 @@ import React, { useCallback, useEffect } from 'react'
 import './App.css'
 import { TodolistsList } from 'features/TodolistsList/TodolistsList'
 import { ErrorSnackbar } from 'common/components/ErrorSnackbar/ErrorSnackbar'
-import { useDispatch, useSelector } from 'react-redux'
-import { initializeAppTC } from './app-reducer'
+import { useSelector } from 'react-redux'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { Login } from 'features/auth/Login'
-import { logoutTC } from 'features/auth/auth-reducer'
 import {
 	AppBar,
 	Button,
@@ -19,6 +17,8 @@ import {
 } from '@mui/material';
 import { Menu } from '@mui/icons-material'
 import {selectorIsInitialized, selectorIsLoggedIn, selectorStatus} from "common/utils/selectors";
+import {authThunks} from "features/auth/auth-reducer";
+import {useActions} from "common/hooks/useActions";
 
 type PropsType = {
 	demo?: boolean
@@ -29,15 +29,14 @@ function App({demo = false}: PropsType) {
 	const isInitialized = useSelector(selectorIsInitialized)
 	const isLoggedIn = useSelector(selectorIsLoggedIn)
 
-	const dispatch = useDispatch<any>()
+	const {initializeApp, logout} = useActions(authThunks)
 
 	useEffect(() => {
-		dispatch(initializeAppTC())
+		initializeApp()
 	}, [])
 
-	const logoutHandler = useCallback(() => {
-		dispatch(logoutTC())
-	}, [])
+	const logoutHandler = () => logout()
+
 
 	if (!isInitialized) {
 		return <div
